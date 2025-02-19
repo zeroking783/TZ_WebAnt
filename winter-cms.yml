@@ -4,7 +4,7 @@ metadata:
   name: winter-php
   labels:
     app: winter-php
-    namespace: winter-dev
+  namespace: winter-dev
 spec:
   replicas: 1
   selector:
@@ -16,13 +16,15 @@ spec:
         app: winter-php
     spec:
       containers:
-        - image: bakvivas/winter_php:latest
+        - image: bakvivas/winter_cms:latest
           name: winter-php 
+          ports:
+            - containerPort: 80
           env:
             - name: DB_CONNECTION
               value: "pgsql"
             - name: DB_HOST
-              value: "127.0.0.1"
+              value: "postgre-postgresql.winter-dev.svc.cluster.local"
             - name: DB_PORT
               value: "5432"
             - name: DB_DATABASE
@@ -31,3 +33,48 @@ spec:
               value: mywinter
             - name: DB_PASSWORD
               value: password
+          volumeMounts:
+            - name: www-conf
+              mountPath: /usr/local/etc/php-fpm.d/www.conf
+              subPath: www.conf
+      volumes:
+        - name: www-conf
+          configMap:
+            name: www-conf
+
+
+---
+apiVersion: v1 
+kind: ConfigMap 
+metadata:
+  name: www-conf
+data:
+  www.conf: |
+    [www]
+    user = www-data
+    group = www-data
+    listen = 0.0.0.0:9000
+    pm = dynamic
+    pm.max_children = 5
+    pm.start_servers = 2
+    pm.min_spare_servers = 1
+    pm.max_spare_servers = 3
+    catch_workers_output = yes
+    error_log = /var/log/php-fpm.log
+
+---
+apiVersion: v1  
+kind: Service 
+metadata:
+  name: winter-php-service
+  namespace: winter-dev 
+  labels: 
+    app: winter-php 
+spec: 
+  type: ClusterIP
+  selector: 
+    app: winter-php 
+  ports: 
+    - protocol: TCP
+      port: 9000
+      targetPort: 9000
