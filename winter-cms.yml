@@ -1,0 +1,33 @@
+apiVersion: apps/v1
+kind: Deployment 
+metadata:
+  name: winter-php
+  labels:
+    app: winter-php
+    namespace: winter-dev
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: winter-php
+  template:
+    metadata:
+      labels:
+        app: winter-php
+    spec:
+      containers:
+        - image: bakvivas/winter_php:latest
+          name: winter-php 
+          env:
+            - name: DB_CONNECTION
+              value: "pgsql"
+            - name: DB_HOST
+              value: "127.0.0.1"
+            - name: DB_PORT
+              value: "5432"
+            - name: DB_DATABASE
+              value: mywinter
+            - name: DB_USERNAME
+              value: mywinter
+            - name: DB_PASSWORD
+              value: password
