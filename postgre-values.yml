@@ -1,0 +1,16 @@
+auth:
+  postgresPassword: password
+  username: mywinter
+  password: password
+  database: mywinter
+
+primary:
+  persistence:
+    existingClaim: pg-pvc
+  pgHbaConfiguration: |-
+    local all       postgres              peer
+    local mywinter  mywinter              md5  
+    host	mywinter	mywinter	0.0.0.0/0		md5
+    
+  configuration: |-
+    listen_addresses = '*'
