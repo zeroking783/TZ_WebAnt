@@ -1,0 +1,14 @@
+version: '3'
+
+services:
+  winter:
+    image: bakvivas/winter_cms:latest
+    container_name: winter-cms
+    environment: 
+      DB_CONNECTION: "pgsql"
+      DB_HOST: "127.0.0.1"
+      DB_PORT: 5432
+      DB_DATABASE: "mywinter"
+      DB_USERNAME: "mywinter"
+      DB_PASSWORD: "password"
+    command: php artisan winter:up

@@ -1,0 +1,35 @@
+FROM php:8.2-fpm
+
+WORKDIR /home
+
+RUN apt-get update && apt-get install -y \
+    wget \
+    unzip \
+    curl \
+    libpng-dev \
+    zlib1g-dev \
+    libjpeg-dev \
+    libzip-dev \
+    libpq-dev
+
+    RUN docker-php-ext-install \
+    gd \
+    zip \
+    pdo_pgsql
+
+RUN curl -sS https://getcomposer.org/installer | php \
+    && mv composer.phar /usr/local/bin/composer
+
+RUN composer create-project wintercms/winter winter
+
+RUN mv winter/ /var/www/html/
+
+RUN chown -R www-data:www-data /var/www/html/winter/
+
+WORKDIR /var/www/html/winter
+
+COPY .env .
+
+# RUN php artisan winter:up
+
+CMD ["php-fpm"]
