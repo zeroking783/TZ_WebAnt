@@ -4,6 +4,9 @@ auth:
   password: password
   database: mywinter
 
+readReplicas:
+  replicaCount: 1
+
 primary:
   persistence:
     existingClaim: pg-pvc
