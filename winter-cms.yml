@@ -16,8 +16,8 @@ spec:
         app: winter-php
     spec:
       containers:
-        - image: bakvivas/winter_cms:latest
-          name: winter-php 
+        - name: winter-php 
+          image: bakvivas/winter_cms:latest
           ports:
             - containerPort: 80
           env:
@@ -34,20 +34,32 @@ spec:
             - name: DB_PASSWORD
               value: password
           volumeMounts:
-            - name: www-conf
+            - name: php-fpm-config
               mountPath: /usr/local/etc/php-fpm.d/www.conf
               subPath: www.conf
+            - name: php-fpm-log
+              mountPath: /var/log
+            - name: php-fpm-config
+              mountPath: /usr/local/etc/php-fpm.conf
+              subPath: php-fpm.conf
+            # - name: php-fpm-config
+            #   mountPath: /var/www/html/winter/.env
+            #   subPath: .env
+            #   readOnly: false
       volumes:
-        - name: www-conf
+        - name: php-fpm-log
+          emptyDir: {}
+        - name: php-fpm-config
           configMap:
-            name: www-conf
+            name: php-fpm-config
 
 
 ---
 apiVersion: v1 
 kind: ConfigMap 
 metadata:
-  name: www-conf
+  name: php-fpm-config
+  namespace: winter-dev
 data:
   www.conf: |
     [www]
@@ -59,8 +71,39 @@ data:
     pm.start_servers = 2
     pm.min_spare_servers = 1
     pm.max_spare_servers = 3
-    catch_workers_output = yes
-    error_log = /var/log/php-fpm.log
+  php-fpm.conf: |
+    [global]
+    include=etc/php-fpm.d/*.conf
+  # .env: |
+  #   APP_DEBUG=true
+  #   APP_URL="http://localhost"
+  #   APP_KEY="base64:7KFG1n07NW0unfPHTYSZWDAE41J0fzfWDnCyF2GleKA="
+
+  #   DB_CONNECTION="pgsql"
+  #   DB_HOST="postgre-postgresql.winter-dev.svc.cluster.local"
+  #   DB_PORT=5432
+  #   DB_DATABASE="mywinter"
+  #   DB_USERNAME="mywinter"
+  #   DB_PASSWORD="password"
+
+  #   CACHE_DRIVER="file"
+
+  #   SESSION_DRIVER="file"
+
+  #   QUEUE_CONNECTION="sync"
+
+  #   MAIL_MAILER="smtp"
+  #   MAIL_ENCRYPTION="null"
+  #   MAIL_HOST="smtp.mailgun.org"
+  #   MAIL_PASSWORD="null"
+  #   MAIL_PORT=587
+  #   MAIL_USERNAME="null"
+
+  #   ROUTES_CACHE=false
+  #   ASSET_CACHE=false
+  #   LINK_POLICY="detect"
+  #   ENABLE_CSRF=true
+  #   DATABASE_TEMPLATES=false
 
 ---
 apiVersion: v1  
@@ -71,7 +114,6 @@ metadata:
   labels: 
     app: winter-php 
 spec: 
-  type: ClusterIP
   selector: 
     app: winter-php 
   ports: 

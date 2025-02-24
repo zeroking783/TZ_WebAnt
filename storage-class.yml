@@ -2,5 +2,6 @@ kind: StorageClass
 apiVersion: storage.k8s.io/v1
 metadata:
   name: local-storage
+  namespace: winter-dev
 provisioner: kubernetes.io/no-provisioner
 volumeBindingMode: WaitForFirstConsumer

@@ -2,6 +2,7 @@ kind: PersistentVolumeClaim
 apiVersion: v1
 metadata:
   name: pg-pvc
+  namespace: winter-dev
 spec:
   storageClassName: local-storage
   accessModes:

@@ -5,6 +5,7 @@ metadata:
   labels:
     type: local
     app: postgres
+  namespace: winter-dev
 spec:
   capacity:
     storage: 4Gi
